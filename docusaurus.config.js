@@ -39,6 +39,7 @@ module.exports = {
         docs: {
           routeBasePath: '/',
           showLastUpdateTime: true,
+          editUrl: 'https://github.com/corona-coin-vk/docs/edit/main',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
