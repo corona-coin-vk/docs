@@ -1,0 +1,40 @@
+name: Deploy to Production server
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency: ci-${{ github.ref }}
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    env:
+      DEPLOY_DIRECTORY: /var/www/user/data/corona-coin/${{ github.ref_name }}/docs
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16.6.0'
+          registry-url: https://registry.npmjs.org
+      
+      - name: Installing dependencies
+        run: npm ci
+      
+      - name: 📚 Building app
+        run: npm run build
+
+      - name: 🚀 Deploying app
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASS }}
+          source: 'build/*'
+          strip_components: 1
+          target: ${{ env.DEPLOY_DIRECTORY }}
+          rm: true
